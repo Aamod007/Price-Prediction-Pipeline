@@ -121,7 +121,7 @@ from abc import ABC, abstractmethod
 import numpy as np
 import pandas as pd
 from sklearn.base import RegressorMixin
-from sklearn.metrics import mean_squared_error, r2_score
+from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 
 # Setup logging configuration
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
@@ -168,9 +168,16 @@ class RegressionModelEvaluationStrategy(ModelEvaluationStrategy):
 
         logging.info("Calculating evaluation metrics.")
         mse = mean_squared_error(y_test, y_pred)
+        rmse = np.sqrt(mse)
+        mae = mean_absolute_error(y_test, y_pred)
         r2 = r2_score(y_test, y_pred)
 
-        metrics = {"Mean Squared Error": mse, "R-Squared": r2}
+        metrics = {
+            "Mean Squared Error": mse, 
+            "Root Mean Squared Error": rmse,
+            "Mean Absolute Error": mae,
+            "R-Squared": r2
+        }
 
         logging.info(f"Model Evaluation Metrics: {metrics}")
         return metrics

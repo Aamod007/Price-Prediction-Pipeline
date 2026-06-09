@@ -25,7 +25,7 @@ ZenML orchestrates the workflow. Below is the directed acyclic graph (DAG) of th
 ![ZenML Dashboard](assets/zenml_dashboard.png)
 
 ### MLflow Experiment Tracking
-MLflow automatically logs all models, metrics (MSE, R-Squared), and schema artifacts:
+MLflow automatically logs all models, metrics (MSE, RMSE, MAE, R-Squared), and schema artifacts:
 
 ![MLflow Dashboard](assets/mlflow_dashboard.png)
 
@@ -38,7 +38,7 @@ The pipeline (`training_pipeline.py`) is structured into several modular steps:
 4. **Outlier Detection** (`outlier_detection_step`): Removes anomalies using Z-score methods.
 5. **Data Splitting** (`data_splitter_step`): Splits the dataset into training and testing sets.
 6. **Model Building** (`model_building_step`): Trains a Linear Regression model.
-7. **Model Evaluation** (`model_evaluator_step`): Computes MSE and R-Squared metrics on the test set.
+7. **Model Evaluation** (`model_evaluator_step`): Computes MSE, RMSE, MAE, and R-Squared metrics on the test set.
 
 ## Installation
 
