@@ -25,9 +25,13 @@ ZenML orchestrates the workflow. Below is the directed acyclic graph (DAG) of th
 ![ZenML Dashboard](assets/zenml_dashboard.png)
 
 ### MLflow Experiment Tracking
-MLflow automatically logs all models, metrics (MSE, RMSE, MAE, R-Squared), and schema artifacts:
+MLflow automatically logs all models, metrics (MSE, RMSE, MAE, R-Squared), and schema artifacts. You can track your experiments and view registered models:
 
-![MLflow Dashboard](assets/mlflow_dashboard.png)
+**Experiments View:**
+![MLflow Experiments](assets/mlflow_dashboard.png)
+
+**Model Registry:**
+![MLflow Models](assets/mlflow_models.png)
 
 ### MLflow Metric Charts
 You can also visualize the logged metrics as charts over multiple runs to compare model performance:
