@@ -29,6 +29,11 @@ MLflow automatically logs all models, metrics (MSE, RMSE, MAE, R-Squared), and s
 
 ![MLflow Dashboard](assets/mlflow_dashboard.png)
 
+### MLflow Metric Charts
+You can also visualize the logged metrics as charts over multiple runs to compare model performance:
+
+![MLflow Metrics](assets/mlflow_metrics.png)
+
 ## Pipeline Steps
 
 The pipeline (`training_pipeline.py`) is structured into several modular steps:
