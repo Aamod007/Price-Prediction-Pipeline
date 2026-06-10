@@ -6,7 +6,7 @@ import pandas as pd
 from sklearn.base import RegressorMixin
 from sklearn.compose import ColumnTransformer
 from sklearn.impute import SimpleImputer
-from sklearn.linear_model import LinearRegression
+from sklearn.ensemble import GradientBoostingRegressor
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder
 from zenml import ArtifactConfig, step
@@ -69,7 +69,15 @@ def model_building_step(
     )
 
     # Define the model training pipeline
-    pipeline = Pipeline(steps=[("preprocessor", preprocessor), ("model", LinearRegression())])
+    pipeline = Pipeline(steps=[("preprocessor", preprocessor), ("model", GradientBoostingRegressor(
+        n_estimators=200,
+        learning_rate=0.1,
+        max_depth=4,
+        min_samples_split=10,
+        min_samples_leaf=5,
+        subsample=0.8,
+        random_state=42,
+    ))])
 
     # Start an MLflow run to log the model training process
     if not mlflow.active_run():
@@ -79,7 +87,7 @@ def model_building_step(
         # Enable autologging for scikit-learn to automatically capture model metrics, parameters, and artifacts
         mlflow.sklearn.autolog()
 
-        logging.info("Building and training the Linear Regression model.")
+        logging.info("Building and training the Gradient Boosting model.")
         pipeline.fit(X_train, y_train)
         logging.info("Model training completed.")
 

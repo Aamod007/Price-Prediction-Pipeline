@@ -18,7 +18,7 @@ def continuous_deployment_pipeline():
     trained_model = ml_pipeline()  # No need for is_promoted return value anymore
 
     # (Re)deploy the trained model
-    mlflow_model_deployer_step(workers=3, deploy_decision=True, model=trained_model)
+    mlflow_model_deployer_step.with_options(parameters=dict(workers=1, timeout=300))(deploy_decision=True, model=trained_model)
 
 
 @pipeline(enable_cache=False)

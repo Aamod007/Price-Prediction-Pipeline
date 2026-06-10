@@ -4,6 +4,7 @@ from typing import Any
 
 import pandas as pd
 from sklearn.base import RegressorMixin
+from sklearn.ensemble import GradientBoostingRegressor
 from sklearn.linear_model import LinearRegression
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
@@ -60,6 +61,48 @@ class LinearRegressionStrategy(ModelBuildingStrategy):
 
         logging.info("Training Linear Regression model.")
         pipeline.fit(X_train, y_train)  # Fit the pipeline to the training data
+
+        logging.info("Model training completed.")
+        return pipeline
+
+
+# Concrete Strategy for Gradient Boosting Regression using scikit-learn
+class GradientBoostingStrategy(ModelBuildingStrategy):
+    def build_and_train_model(self, X_train: pd.DataFrame, y_train: pd.Series) -> Pipeline:
+        """
+        Builds and trains a Gradient Boosting regression model using scikit-learn.
+
+        Parameters:
+        X_train (pd.DataFrame): The training data features.
+        y_train (pd.Series): The training data labels/target.
+
+        Returns:
+        Pipeline: A scikit-learn pipeline with a trained Gradient Boosting model.
+        """
+        if not isinstance(X_train, pd.DataFrame):
+            raise TypeError("X_train must be a pandas DataFrame.")
+        if not isinstance(y_train, pd.Series):
+            raise TypeError("y_train must be a pandas Series.")
+
+        logging.info("Initializing Gradient Boosting model with scaling.")
+
+        pipeline = Pipeline(
+            [
+                ("scaler", StandardScaler()),
+                ("model", GradientBoostingRegressor(
+                    n_estimators=200,
+                    learning_rate=0.1,
+                    max_depth=4,
+                    min_samples_split=10,
+                    min_samples_leaf=5,
+                    subsample=0.8,
+                    random_state=42,
+                )),
+            ]
+        )
+
+        logging.info("Training Gradient Boosting model.")
+        pipeline.fit(X_train, y_train)
 
         logging.info("Model training completed.")
         return pipeline

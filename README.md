@@ -5,7 +5,7 @@
 [![MLflow](https://img.shields.io/badge/Tracking-MLflow-blue.svg)](https://mlflow.org)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
-An end-to-end, production-grade Machine Learning pipeline for predicting house prices. This project utilizes modern MLOps tools to create a robust, reproducible, and trackable machine learning workflow.
+An end-to-end, production-grade Machine Learning pipeline for predicting house prices. This project utilizes modern MLOps tools to create a robust, reproducible, and trackable machine learning workflow with Continuous Deployment.
 
 ## Table of Contents
 - [Overview](#overview)
@@ -15,48 +15,52 @@ An end-to-end, production-grade Machine Learning pipeline for predicting house p
 - [Usage](#usage)
 
 ## Overview
-This repository contains a full ML pipeline designed to ingest raw housing data, clean it, train a linear regression model, and evaluate its performance. Instead of standalone Jupyter notebooks, this project uses **ZenML** for orchestration and **MLflow** for experiment tracking to ensure every step is modular, cached, and production-ready.
+This repository contains a full ML pipeline designed to ingest raw housing data, clean it, train a Gradient Boosting regression model, and evaluate its performance. It also includes a continuous deployment pipeline that deploys the trained model as a prediction service using MLflow. Instead of standalone Jupyter notebooks, this project uses **ZenML** for orchestration and **MLflow** for experiment tracking and model serving to ensure every step is modular, cached, and production-ready.
 
 ## Dataset & Performance Metrics
 - **Dataset**: Ames Housing Dataset (2,930 entries, 82 features)
 - **Key Metrics Achieved**:
-  - **R-Squared (R²)**: 0.582
-  - **Root Mean Squared Error (RMSE)**: 0.259
-  - **Mean Absolute Error (MAE)**: 0.187
-  - **Mean Squared Error (MSE)**: 0.067
-  - **Training Score**: 0.582
+  - **R-Squared (R²)**: 0.920
+  - **Root Mean Squared Error (RMSE)**: 0.106
+  - **Mean Absolute Error (MAE)**: 0.073
+  - **Mean Squared Error (MSE)**: 0.011
 
 ## Architecture & Dashboards
 
 ### ZenML Pipeline DAG
 ZenML orchestrates the workflow. Below is the directed acyclic graph (DAG) of the ML pipeline:
 
-![ZenML Dashboard](assets/zenml_dashboard.png)
+![ZenML Dashboard](assets/Screenshot%202026-06-10%20204203.png)
 
 ### MLflow Experiment Tracking
 MLflow automatically logs all models, metrics (MSE, RMSE, MAE, R-Squared), and schema artifacts. You can track your experiments and view registered models:
 
 **Experiments View:**
-![MLflow Experiments](assets/mlflow_dashboard.png)
+![MLflow Experiments](assets/Screenshot%202026-06-10%20204218.png)
 
-**Model Registry:**
-![MLflow Models](assets/mlflow_models.png)
+**Model Registry & Deployments:**
+![MLflow Models](assets/Screenshot%202026-06-10%20204254.png)
 
 ### MLflow Metric Charts
 You can also visualize the logged metrics as charts over multiple runs to compare model performance:
 
-![MLflow Metrics](assets/mlflow_metrics.png)
+![MLflow Metrics](assets/Screenshot%202026-06-10%20204353.png)
 
 ## Pipeline Steps
 
-The pipeline (`training_pipeline.py`) is structured into several modular steps:
+### 1. Training Pipeline (`pipelines/training_pipeline.py`)
 1. **Data Ingestion** (`data_ingestion_step`): Loads raw data from a zip archive.
 2. **Handle Missing Values** (`handle_missing_values_step`): Imputes missing data using statistical methods (e.g., mean imputation).
 3. **Feature Engineering** (`feature_engineering_step`): Applies log transformations to skewed features.
 4. **Outlier Detection** (`outlier_detection_step`): Removes anomalies using Z-score methods.
 5. **Data Splitting** (`data_splitter_step`): Splits the dataset into training and testing sets.
-6. **Model Building** (`model_building_step`): Trains a Linear Regression model.
+6. **Model Building** (`model_building_step`): Trains a Gradient Boosting Regressor model.
 7. **Model Evaluation** (`model_evaluator_step`): Computes MSE, RMSE, MAE, and R-Squared metrics on the test set.
+
+### 2. Continuous Deployment Pipeline (`pipelines/deployment_pipeline.py`)
+1. **Training Pipeline Integration**: Executes the training pipeline to produce a model.
+2. **Model Deployment** (`mlflow_model_deployer_step`): Deploys the trained Gradient Boosting model as a local prediction service daemon using MLflow.
+3. **Inference Pipeline**: Loads batch data and hits the local prediction service endpoint to generate predictions.
 
 ## Installation
 
@@ -81,17 +85,27 @@ zenml integration install mlflow -y
 ## Usage
 
 ### 1. Initialize ZenML and MLflow Stack
-Set up the tracking tools locally:
+Set up the tracking tools and deployer locally:
 ```bash
 zenml experiment-tracker register mlflow_tracker --flavor=mlflow
-zenml stack register mlflow_stack -a default -o default -e mlflow_tracker
-zenml stack set mlflow_stack
+zenml model-deployer register mlflow_deployer --flavor=mlflow
+zenml stack register mlflow_stack -a default -o default -e mlflow_tracker -d mlflow_deployer --set
 ```
 
-### 2. Run the Pipeline
-Execute the full end-to-end pipeline:
+### 2. Run the Pipelines
+To run just the training pipeline:
 ```bash
 python run_pipeline.py
+```
+
+To run the continuous deployment pipeline and deploy the model:
+```bash
+python run_deployment.py
+```
+
+To test the live prediction endpoint:
+```bash
+python sample_predict.py
 ```
 
 ### 3. View the Dashboards
@@ -103,13 +117,9 @@ zenml login --local --blocking
 
 To view your tracked experiments and metrics in MLflow:
 ```bash
-# Windows:
-$env:MLFLOW_ALLOW_FILE_STORE="true"
-mlflow ui --backend-store-uri 'file:C:\Users\aamod\AppData\Roaming\zenml\local_stores\977ca20e-a3b1-4595-945a-8040cf0f02f2\mlruns'
-
-# Linux/Mac:
+# Set file store flag to allow local tracking
 export MLFLOW_ALLOW_FILE_STORE=true
-mlflow ui --backend-store-uri 'file:~/.config/zenml/local_stores/...' 
+mlflow ui --backend-store-uri 'file:./mlruns'
 ```
 
 ---
