@@ -17,6 +17,15 @@ An end-to-end, production-grade Machine Learning pipeline for predicting house p
 ## Overview
 This repository contains a full ML pipeline designed to ingest raw housing data, clean it, train a linear regression model, and evaluate its performance. Instead of standalone Jupyter notebooks, this project uses **ZenML** for orchestration and **MLflow** for experiment tracking to ensure every step is modular, cached, and production-ready.
 
+## Dataset & Performance Metrics
+- **Dataset**: Ames Housing Dataset (2,930 entries, 82 features)
+- **Key Metrics Achieved**:
+  - **R-Squared (R²)**: 0.582
+  - **Root Mean Squared Error (RMSE)**: 0.259
+  - **Mean Absolute Error (MAE)**: 0.187
+  - **Mean Squared Error (MSE)**: 0.067
+  - **Training Score**: 0.582
+
 ## Architecture & Dashboards
 
 ### ZenML Pipeline DAG
@@ -104,4 +113,4 @@ mlflow ui --backend-store-uri 'file:~/.config/zenml/local_stores/...'
 ```
 
 ---
-*Built with ZenML & MLflow.*
+*Built by Aamod Kumar with ZenML & MLflow.*
